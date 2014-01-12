@@ -18,7 +18,7 @@ module Mongoid::History::Operation
     end
 
     def doc_class
-      ( doc && doc.class ) ||
+      ( doc && doc.class) ||
         current_track.association_chain.leaf.class_name.constantize
     end
 

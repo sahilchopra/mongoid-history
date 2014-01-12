@@ -1,18 +1,18 @@
 module Mongoid::History
   class Meta
     DEFAULT_OPTIONS = {
-      :on             =>  :all,
-      :except         =>  [:_id, :id, :created_at, :updated_at],
-      :modifier_field =>  :modifier,
-      :version_field  =>  :version,
-      :track_create   =>  false,
-      :track_update   =>  true,
-      :track_destroy  =>  false,
+      on: :all,
+      except: [:_id, :id, :created_at, :updated_at],
+      modifier_field: :modifier,
+      version_field: :version,
+      track_create: false,
+      track_update: true,
+      track_destroy: false,
     }
 
     attr_reader :klass, :options, :switch
 
-    def initialize(klass, opts={})
+    def initialize(klass, opts = {})
       @klass    = klass
       @options  = DEFAULT_OPTIONS.merge opts
       @switch   = Switch.new(klass)

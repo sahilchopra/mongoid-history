@@ -6,8 +6,8 @@ describe Mongoid::History::Association::Node do
   let(:klass)   { Mongoid::History::Association::Node }
 
   let(:car)     { Car.new }
-  let(:door)    { Door.new :car => car }
-  let(:window)  { Window.new :door => door }
+  let(:door)    { Door.new car: car }
+  let(:window)  { Window.new door: door }
 
   describe "#initialize" do
     its(:name)        { should == 'doors'  }

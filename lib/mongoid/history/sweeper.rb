@@ -1,7 +1,7 @@
 module Mongoid::History
   class Sweeper < Mongoid::Observer
     def self.hook!
-      if defined?(ActionController) and defined?(ActionController::Base)
+      if defined?(ActionController) && defined?(ActionController::Base)
         ActionController::Base.class_eval do
           around_filter Mongoid::History::Sweeper.instance
         end

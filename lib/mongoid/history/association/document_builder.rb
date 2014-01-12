@@ -15,9 +15,11 @@ module Mongoid::History::Association
     def build
       Chain.new.tap do |chain|
         current = @doc
-        begin
+        loop do
+          current = current._parent
+          break unless current
           chain.unshift build_node(current)
-        end while current = current._parent
+        end
       end
     end
 

@@ -1,7 +1,6 @@
 module Mongoid::History::Association
   class Chain < Array
     class << self
-
       # Get the object as it was stored in the database, and instantiate
       # this custom class from it.
       def demongoize(array)
@@ -54,6 +53,5 @@ module Mongoid::History::Association
     def mongoize
       to_a
     end
-
   end
 end

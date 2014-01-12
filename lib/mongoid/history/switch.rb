@@ -23,12 +23,10 @@ module Mongoid::History
     end
 
     def disable
-      begin
-        off!
-        yield
-      ensure
-        on!
-      end
+      off!
+      yield
+    ensure
+      on!
     end
   end
 end

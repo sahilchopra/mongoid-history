@@ -1,16 +1,16 @@
 module Mongoid::History::Builder
   class TrackQuery < Abstract
     def build(versions)
-      doc.
-        history_tracks.
-        where(:version.in => extract_versions(versions)).
-        asc(:version)
+      doc
+        .history_tracks
+        .where(:version.in => extract_versions(versions))
+        .asc(:version)
     end
 
     def extract_versions(arg)
       case arg
       when Fixnum
-        [ arg ]
+        [arg]
       when Array
         arg
       when Range
@@ -22,7 +22,7 @@ module Mongoid::History::Builder
 
     def normalize_options(opts)
       if opts[:from] && opts[:to]
-        range = [ opts[:from].to_i, opts[:to].to_i ]
+        range = [opts[:from].to_i, opts[:to].to_i]
         min = range.min
         max = range.max
         (min..max).to_a
@@ -37,5 +37,3 @@ module Mongoid::History::Builder
     end
   end
 end
-
-

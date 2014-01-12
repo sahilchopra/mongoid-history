@@ -19,9 +19,9 @@ class Mongoid::History::Delta
 
     def sanitize(change_set)
       if meta.track_all_fields?
-        change_set.reject{ |k, v| meta.except_fields.include?(k.to_sym) }
+        change_set.reject { |k, v| meta.except_fields.include?(k.to_sym) }
       else
-        change_set.select{ |k, v| meta.only_fields.include?(k.to_sym)  }
+        change_set.select { |k, v| meta.only_fields.include?(k.to_sym)  }
       end
     end
   end

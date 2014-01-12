@@ -54,18 +54,4 @@ require "#{root}/mongoid/history/trackable"
 # sweeper
 require "#{root}/mongoid/history/sweeper"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Dir["#{}/mongoid/**/*.rb"].sort.each { |f| require f }

@@ -12,11 +12,11 @@ module Mongoid::History::Association
       { 'name' => name, 'id' => id, 'class_name' => class_name }
     end
 
-    def ==(another)
-      id == another.id &&
-        name == another.name &&
-        class_name == another.class_name &&
-        doc == another.doc
+    def ==(other)
+      id == other.id &&
+        name == other.name &&
+        class_name == other.class_name &&
+        doc == other.doc
     end
 
     def embeds_one?(name)

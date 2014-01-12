@@ -1,7 +1,7 @@
 module Mongoid::History
   class Delta
     attr_reader :doc
-    delegate    :results, :to => "@current_state"
+    delegate    :results, to: "@current_state"
 
     def initialize(doc)
       @doc            = doc

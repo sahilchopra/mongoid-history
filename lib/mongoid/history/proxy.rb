@@ -27,11 +27,9 @@ module Mongoid::History
 
     def history
       meta.tracker.where(
-        :scope              => meta.scope,
-        :association_chain  => association_chain.root.to_hash
+        scope: meta.scope,
+        association_chain: association_chain.root.to_hash
       )
     end
-
-
   end
 end

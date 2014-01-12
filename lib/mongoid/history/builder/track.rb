@@ -22,13 +22,13 @@ module Mongoid::History::Builder
       return if original.blank? && modified.blank?
 
       {
-        :association_chain  => association_chain,
-        :scope              => meta.scope,
-        :original           => original,
-        :modified           => modified,
-        :modifier           => modifier,
-        :version            => version,
-        :action             => action
+        association_chain: association_chain,
+        scope: meta.scope,
+        original: original,
+        modified: modified,
+        modifier: modifier,
+        version: version,
+        action: action
       }
     end
 

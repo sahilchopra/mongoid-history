@@ -2,13 +2,13 @@ module Mongoid::History::Trackable
   extend ActiveSupport::Concern
 
   module ClassMethods
-    def track_history(opts={})
+    def track_history(opts = {})
       Mongoid::History.register(self, opts)
 
       meta = Mongoid::History.meta(self)
 
-      field meta.version_field, :type => Integer, :default => 0
-      referenced_in meta.modifier_field, :class_name => meta.modifier_class_name
+      field meta.version_field, type: Integer, default: 0
+      referenced_in meta.modifier_field, class_name: meta.modifier_class_name
 
       include MyInstanceMethods
 
@@ -25,11 +25,11 @@ module Mongoid::History::Trackable
       @trackable_proxy ||= Mongoid::History::Proxy.new(self)
     end
 
-    def undo!(modifier, options_or_version=nil)
+    def undo!(modifier, options_or_version = nil)
       trackable_proxy.undo!(modifier, options_or_version)
     end
 
-    def redo!(modifier, options_or_version=nil)
+    def redo!(modifier, options_or_version = nil)
       trackable_proxy.redo!(modifier, options_or_version)
     end
 

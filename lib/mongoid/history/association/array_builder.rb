@@ -7,8 +7,9 @@ module Mongoid::History::Association
     def build
       Chain.new.tap do |chain|
         chain.push build_root
-        while hash = @array.shift
-          chain.push build_child(chain.last, hash)
+        while (hash = @array.shift)
+          child = build_child(chain.last, hash)
+          chain.push child
         end
       end
     end
@@ -42,7 +43,7 @@ module Mongoid::History::Association
     end
 
     def query_doc(model_or_collection, id)
-      model_or_collection.where(:_id => id).first
+      model_or_collection.where(_id: id).first
     end
   end
 end

@@ -8,8 +8,8 @@ describe Mongoid::History::Association::Chain do
   let(:door_node)   { node_klass.new 'doors', 1112, 'Door', door      }
   let(:window_node) { node_klass.new 'window', 1234, 'Window', window }
   let(:car)         { Car.new                                         }
-  let(:door)        { Door.new :car => car                            }
-  let(:window)      { Window.new :door => door                        }
+  let(:door)        { Door.new car: car                            }
+  let(:window)      { Window.new door: door                        }
 
   before do
     chain << car_node
@@ -47,18 +47,18 @@ describe Mongoid::History::Association::Chain do
       array = []
 
       array_builder = double('array_builder')
-      Mongoid::History::Association::ArrayBuilder.
-        should_receive(:new).
-        with(array).
-        and_return(array_builder)
+      Mongoid::History::Association::ArrayBuilder
+        .should_receive(:new)
+        .with(array)
+        .and_return(array_builder)
 
-      array_builder.
-        should_receive(:build).
-        and_return(chain)
+      array_builder
+        .should_receive(:build)
+        .and_return(chain)
 
-      Mongoid::History::Association::Chain.
-        build_from_array(array).
-        should equal chain
+      Mongoid::History::Association::Chain
+        .build_from_array(array)
+        .should equal chain
     end
   end
 
@@ -67,18 +67,18 @@ describe Mongoid::History::Association::Chain do
       doc = window
 
       doc_builder = double('doc_builder')
-      Mongoid::History::Association::DocumentBuilder.
-        should_receive(:new).
-        with(doc).
-        and_return(doc_builder)
+      Mongoid::History::Association::DocumentBuilder
+        .should_receive(:new)
+        .with(doc)
+        .and_return(doc_builder)
 
-      doc_builder.
-        should_receive(:build).
-        and_return(chain)
+      doc_builder
+        .should_receive(:build)
+        .and_return(chain)
 
-      Mongoid::History::Association::Chain.
-        build_from_doc(doc).
-        should equal chain
+      Mongoid::History::Association::Chain
+        .build_from_doc(doc)
+        .should equal chain
     end
   end
 end
