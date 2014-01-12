@@ -16,13 +16,27 @@ module Mongoid::History::Association
         when Array
           object
         else
-          raise  ArgumentError, "#{objct.class} is not a valid Mongoid::History::Association::Chain"
+          raise  ArgumentError, "#{object.class} is not a valid Mongoid::History::Association::Chain"
         end
       end
 
       # Converts the object that was supplied to a criteria and converts it
       # into a database friendly form.
-      alias_method :evolve, :mongoize
+      def evolve(object)
+        binding.pry
+        case object
+        when Node
+        when Chain
+          object.mongoize
+        when Array
+        when Node
+          object
+        when nil
+          []
+        else
+          raise  ArgumentError, "#{object.class} is not a valid Mongoid::History::Association::Chain or Mongoid::History::Association::Node"
+        end
+      end
 
       def build_from_doc(doc)
         DocumentBuilder.new(doc).build

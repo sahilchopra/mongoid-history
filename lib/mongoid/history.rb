@@ -2,6 +2,8 @@ module Mongoid
   module History
     mattr_accessor :modifier_class_name
     mattr_accessor :current_user_method
+    mattr_accessor :tracker_class_name
+
     mattr_accessor :metas
     mattr_accessor :switches
 
@@ -11,7 +13,7 @@ module Mongoid
     self.current_user_method  = :current_user
 
     def self.tracker_class
-      @tracker_class_name.constantize
+      tracker_class_name.constantize
     end
 
     def self.tracker_class=(klass)

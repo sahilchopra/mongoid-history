@@ -26,9 +26,10 @@ module Mongoid::History
     end
 
     def history
+      binding.pry
       meta.tracker.where(
         scope: meta.scope,
-        association_chain: association_chain.root.to_hash
+        association_chain: association_chain.root
       )
     end
   end

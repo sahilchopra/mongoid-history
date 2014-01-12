@@ -71,10 +71,10 @@ describe Mongoid::History do
     class Foo < Comment
     end
 
-    @persisted_history_options = Mongoid::History.trackable_class_options
+    @persisted_history_options = Mongoid::History.metas
   end
 
-  before(:each) { Mongoid::History.trackable_class_options = @persisted_history_options }
+  before(:each) { Mongoid::History.metas = @persisted_history_options }
   let(:user) { User.create(name: "Aaron", email: "aaron@randomemail.com", aliases: ['bob'], country: 'Canada', city: 'Toronto', address: '21 Jump Street') }
   let(:another_user) { User.create(name: "Another Guy", email: "anotherguy@randomemail.com") }
   let(:post) { Post.create(title: "Test", body: "Post", modifier: user, views: 100) }
@@ -84,6 +84,7 @@ describe Mongoid::History do
   describe "track" do
     describe "on creation" do
       it "should have one history track in comment" do
+        binding.pry
         comment.history_tracks.count.should == 1
       end
 

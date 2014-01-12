@@ -10,7 +10,7 @@ module Mongoid::History::Trackable
       field meta.version_field, type: Integer, default: 0
       belongs_to meta.modifier_field, class_name: meta.modifier_class_name
 
-      include MyInstanceMethods
+      include InstanceMethods
 
       [:create, :update, :destroy].each do |action|
         set_callback action, :before do |document|
@@ -20,7 +20,7 @@ module Mongoid::History::Trackable
     end
   end
 
-  module MyInstanceMethods
+  module InstanceMethods
     def trackable_proxy
       @trackable_proxy ||= Mongoid::History::Proxy.new(self)
     end

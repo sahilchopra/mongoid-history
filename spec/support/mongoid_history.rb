@@ -8,6 +8,6 @@ RSpec.configure do |config|
   end
   config.after :each do
     Mongoid::History.tracker_class_name = nil
-    Mongoid::History.trackable_class_options = nil
+    Mongoid::History.metas = {}
   end
 end
