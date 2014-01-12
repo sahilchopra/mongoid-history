@@ -13,7 +13,6 @@ require "#{root}/mongoid/history/association/node"
 require "#{root}/mongoid/history/association/chain"
 require "#{root}/mongoid/history/association/array_builder"
 require "#{root}/mongoid/history/association/document_builder"
-require "#{root}/mongoid/history/association/field"
 
 # builders
 require "#{root}/mongoid/history/builder/abstract"

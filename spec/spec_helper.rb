@@ -1,23 +1,11 @@
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-$LOAD_PATH.unshift(File.dirname(__FILE__))
+require 'coveralls'
+Coveralls.wear!
 
-require 'rspec'
+$LOAD_PATH.push File.expand_path('../../lib', __FILE__)
+
+require 'active_support/all'
 require 'mongoid'
+
+Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
+
 require 'mongoid-history'
-require 'database_cleaner'
-
-Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].sort.each {|f| require f}
-
-RSpec.configure do |config|
-  config.before(:suite) do
-    DatabaseCleaner.strategy = :truncation
-  end
-
-  config.after(:each) do
-    DatabaseCleaner.clean
-  end
-end
-
-Mongoid.configure do |config|
-  config.master = Mongo::Connection.new.db("mongoid-history")
-end

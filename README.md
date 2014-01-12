@@ -1,51 +1,25 @@
 mongoid-history
 ===============
 
-[![Build Status](https://secure.travis-ci.org/aq1018/mongoid-history.png?branch=master)](http://travis-ci.org/aq1018/mongoid-history) [![Dependency Status](https://gemnasium.com/aq1018/mongoid-history.png?travis)](https://gemnasium.com/aq1018/mongoid-history)
+[![Gem Version](https://badge.fury.io/rb/mongoid-history.png)](http://badge.fury.io/rb/mongoid-history)
+[![Build Status](https://secure.travis-ci.org/aq1018/mongoid-history.png?branch=master)](http://travis-ci.org/aq1018/mongoid-history)
+[![Dependency Status](https://gemnasium.com/aq1018/mongoid-history.png)](https://gemnasium.com/aq1018/mongoid-history)
+[![Code Climate](https://codeclimate.com/github/aq1018/mongoid-history.png)](https://codeclimate.com/github/aq1018/mongoid-history)
+[![Coverage Status](https://coveralls.io/repos/aq1018/mongoid-history/badge.png?branch=coveralls)](https://coveralls.io/r/aq1018/mongoid-history?branch=coveralls)
 
+Mongoid-history tracks historical changes for any document, including embedded ones. It achieves this by storing all history tracks in a single collection that you define. Embedded documents are referenced by storing an association path, which is an array of `document_name` and `document_id` fields starting from the top most parent document and down to the embedded document that should track history.
 
-In frustration of Mongoid::Versioning, I created this plugin for tracking historical changes for any document, including embedded ones. It achieves this by storing all history tracks in a single collection that you define. (See Usage for more details) Embedded documents are referenced by storing an association path, which is an array of document_name and document_id fields starting from the top most parent document and down to the embedded document that should track history.
+This gem also implements multi-user undo, which allows users to undo any history change in any order. Undoing a document also creates a new history track. This is great for auditing and preventing vandalism, but is probably not suitable for use cases such as a wiki.
 
-This plugin implements multi-user undo, which allows users to undo any history change in any order. Undoing a document also creates a new history track. This is great for auditing and preventing vandalism, but it is probably not suitable for use cases such as a wiki.
+Stable Release
+--------------
 
-Note
-----
-
-**Please don't use 0.1.8 and 0.2.0.**
-
-They won't work in Rails because there was an error in the sweeper that causes history tracker creation to fail. Upgrade to version 0.2.1 instead as it is able to track history on `embeds_one` documents correctly.
-
-**Refactor in progress**
-
-If you feel brave, you can look at the `refactor` branch and get a feel of what's coming. As I stated many times before, this gem was originally hacked up in one evening, and got patched many times by various fellow users. Thus the code has become pretty unmanagable over time.  The `refactor` branch tries repay this technical debt by breaking things down into smaller class and implement better tests. Stay tuned! :D
-
-Upgrading from mongoid-history-0.1.x to >= 0.2
-------------------------------------------------
-
-If you are upgrade from 0.1.x to version 0.2.x, you need to run the following code **before** you start to use the 0.2.x. This is due to changes in `Mongoid::History::Tracker`'s `association_chain` field.
-
-```ruby
-Mongoid::History.tracker_class.all.each do |tracker|
-  tracker.association_chain[1..-1].each do |node|
-    node['name'] = node['name'].tableize
-  end
-  tracker.save!
-end
-```
+You're reading the documentation the 0.4.x release that supports Mongoid 3.x. For 2.x compatible mongoid-history, please use a 0.2.x version from the [2.x-stable branch](https://github.com/aq1018/mongoid-history/tree/2.4-stable).
 
 Install
 -------
 
-Currently this gem supports ruby 1.9.x only. ruby 1.8.7, ree and rubinus are not working right now.
-
-```
-gem install mongoid-history
-```
-
-Rails 3
--------
-
-In your Gemfile:
+This gem supports Mongoid 3.x on Ruby 1.9.3 only. Add it to your `Gemfile` or run `gem install mongoid-history`.
 
 ```ruby
 gem 'mongoid-history'
@@ -54,9 +28,7 @@ gem 'mongoid-history'
 Usage
 -----
 
-Here is a quick example on how to use this plugin. For more details, please look at spec/integration/integration_spec.rb. It offers more detailed examples on how to use `Mongoid::History`.
-
-**Create a History Tracker**
+**Create a history tracker**
 
 Create a new class to track histories. All histories are stored in this tracker. The name of the class can be anything you like. The only requirement is that it includes `Mongoid::History::Tracker`
 
@@ -67,12 +39,11 @@ class HistoryTracker
 end
 ```
 
-**Set Tracker Class Name**
+**Set tracker class name**
 
+Manually set the tracker class name to make sure your tracker can be found and loaded properly. You can skip this step if you manually require your tracker before using any trackables.
 
-You should manually set the tracker class name to make sure your tracker can be found and loaded properly. You can skip this step if you manually require your tracker before using any trackables. If you don't know what I'm talking about, then you should just follow the example below.
-
-Here is an example of setting the tracker class name using a rails initializer
+The following example sets the tracker class name using a Rails initializer.
 
 ```ruby
 # config/initializers/mongoid-history.rb
@@ -81,38 +52,15 @@ Here is an example of setting the tracker class name using a rails initializer
 Mongoid::History.tracker_class_name = :history_tracker
 ```
 
-**Set `#current_user` method name**
-
-You can set name of method which returns currently logged in user if you don't want to set modifier explicitly on every update.
-
-Here is an example of setting the current_user_method using a rails initializer
-
-```ruby
-# config/initializers/mongoid-history.rb
-# initializer for mongoid-history
-# assuming you're using devise/authlogic
-Mongoid::History.current_user_method = :current_user
-```
-
-When current_user_method is set mongoid-history call this method on each update and set it as modifier
-
-```ruby
-# Assume that current_user return #<User _id: 1>
-post = Post.first
-post.update_attributes(:title => 'New title')
-
-post.history_tracks.last.modifier #=> #<User _id: 1>
-```
-
-***Create Trackable classes and objects***
+**Create trackable classes and objects**
 
 ```ruby
 class Post
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  # History tracking all Post Documents
-  # Note: Tracking will not work until #track_history is invoked
+  # history tracking all Post documents
+  # note: tracking will not work until #track_history is invoked
   include Mongoid::History::Trackable
 
   field           :title
@@ -120,32 +68,33 @@ class Post
   field           :rating
   embeds_many     :comments
 
-  # Telling Mongoid::History how you want to track
-  track_history   :on => [:title, :body],       # I want to track title and body fields only. Default is :all
-                  :modifier_field => :modifier, # Adds "referened_in :modifier" to track who made the change. Default is :modifier
-                  :version_field => :version,   # Adds "field :version, :type => Integer" to track current version. Default is :version
-                  :track_create   =>  false,    # Do you want to track document creation? Default is false
-                  :track_update   =>  true,     # Do you want to track document updates? Default is true
-                  :track_destroy  =>  false,    # Do you want to track document destruction? Default is false
+  # telling Mongoid::History how you want to track changes
+  track_history   :on => [:title, :body],       # track title and body fields only, default is :all
+                  :modifier_field => :modifier, # adds "belongs_to :modifier" to track who made the change, default is :modifier
+                  :modifier_field_inverse_of => :nil, # adds an ":inverse_of" option to the "belongs_to :modifier" relation, default is not set
+                  :version_field => :version,   # adds "field :version, :type => Integer" to track current version, default is :version
+                  :track_create   =>  false,    # track document creation, default is false
+                  :track_update   =>  true,     # track document updates, default is true
+                  :track_destroy  =>  false     # track document destruction, default is false
 end
 
 class Comment
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  # Declare that we want to track comments
+  # declare that we want to track comments
   include Mongoid::History::Trackable
 
   field             :title
   field             :body
   embedded_in       :post, :inverse_of => :comments
 
-  # Track title and body for all comments, scope it to post (the parent)
-  # Also track creation and destruction
+  # track title and body for all comments, scope it to post (the parent)
+  # also track creation and destruction
   track_history     :on => [:title, :body], :scope => :post, :track_create => true, :track_destroy => true
 end
 
-# The modifier can be specified as well
+# the modifier class
 class User
   include Mongoid::Document
   include Mongoid::Timestamps
@@ -182,6 +131,9 @@ comment.redo! user, :from => 1, :to => 4
 # redo last 3 versions
 comment.redo! user, :last => 3
 
+# redo version 1
+comment.redo! user, 1
+
 # delete post
 post.destroy
 
@@ -192,22 +144,168 @@ post.undo! user
 Comment.disable_tracking do
   comment.update_attributes(:title => "Test 3")
 end
+
+# globally disable all history tracking
+Mongoid::History.disable do
+  comment.update_attributes(:title => "Test 3")
+  user.update_attributes(:name => "Eddie Van Halen")
+end
 ```
+
+**Retrieving the list of tracked fields**
+
+```ruby
+class Book
+  ...
+  field             :title
+  field             :author
+  field             :price
+  track_history     :on => [:title, :price]
+end
+
+Book.tracked_fields           #=> ["title", "price"]
+Book.tracked_field?(:title)   #=> true
+Book.tracked_field?(:author)  #=> false
+```
+
+**Displaying history trackers as an audit trail**
+
+In your Controller:
+
+```ruby
+# Fetch history trackers
+@trackers = HistoryTracker.limit(25)
+
+# get change set for the first tracker
+@changes = @trackers.first.tracked_changes
+  #=> {field: {to: val1, from: val2}}
+
+# get edit set for the first tracker
+@edits = @trackers.first.tracked_edits
+  #=> { add: {field: val},
+  #     remove: {field: val},
+  #     modify: { to: val1, from: val2 },
+  #     array: { add: [val2], remove: [val1] } }
+```
+
+In your View, you might do something like (example in HAML format):
+
+```haml
+%ul.changes
+  - (@edits[:add]||[]).each do |k,v|
+    %li.remove Added field #{k} value #{v}
+
+  - (@edits[:modify]||[]).each do |k,v|
+    %li.modify Changed field #{k} from #{v[:from]} to #{v[:to]}
+
+  - (@edits[:array]||[]).each do |k,v|
+    %li.modify
+      - if v[:remove].nil?
+        Changed field #{k} by adding #{v[:add]}
+      - elsif v[:add].nil?
+        Changed field #{k} by removing #{v[:remove]}
+      - else
+        Changed field #{k} by adding #{v[:add]} and removing #{v[:remove]}
+
+  - (@edits[:remove]||[]).each do |k,v|
+    %li.remove Removed field #{k} (was previously #{v})
+```
+
+**Adding Userstamp on History Trackers**
+
+To track the User in the application who created the HistoryTracker, please add the 
+[Mongoid::Userstamp gem](https://github.com/tbpro/mongoid_userstamp) to your HistoryTracker class.
+This will add a field called `created_by` and an accessor `creator` to the model (you can rename these via gem config). 
+
+```
+class MyHistoryTracker
+  include Mongoid::History::Tracker
+  include Mongoid::Userstamp
+end
+```
+
+*Migrating Userstamp from Previous Versions*
+
+Since October 2013, Mongoid::History itself no longer supports the userstamp natively. In order to migrate, follow the 
+instructions above then run the following command:
+
+```
+MyHistoryTracker.all.each{|ht| ht.rename(:modifier_id, :created_by)
+```
+
+**Using an alternate changes method**
+
+Sometimes you may wish to provide an alternate method for determining which changes should be tracked.  For example, if you are using embedded documents
+and nested attributes, you may wish to write your own changes method that includes changes from the embedded documents.
+
+Mongoid::History provides an option named `:changes_method` which allows you to do this.  It defaults to `:changes`, which is the standard changes method.
+
+Example:
+
+```ruby
+class Foo
+  include Mongoid::Document
+  include Mongoid::Timestamps
+  include Mongoid::History::Trackable
+
+  field      :bar
+  embeds_one :baz
+  accepts_nested_attributes_for :baz
+
+  # use changes_with_baz to include baz's changes in this document's
+  # history.
+  track_history     :changes_method => :changes_with_baz
+
+  def changes_with_baz
+    if baz.changed?
+      changes.merge( :baz => summarized_changes(baz) )
+    else
+      changes
+    end
+  end
+
+  private
+  # This method takes the changes from an embedded doc and formats them
+  # in a summarized way, similar to how the embedded doc appears in the
+  # parent document's attributes
+  def summarized_changes obj
+    obj.changes.keys.map do |field|
+      next unless obj.respond_to?("#{field}_change")
+      [ { field => obj.send("#{field}_change")[0] },
+        { field => obj.send("#{field}_change")[1] } ]
+    end.compact.transpose.map do |fields|
+      fields.inject({}) {|map,f| map.merge(f)}
+    end
+  end
+end
+
+class Baz
+  include Mongoid::Document
+  include Mongoid::Timestamps
+
+  embedded_in :foo
+  field :value
+end
+```
+
+For more examples, check out [spec/integration/integration_spec.rb](https://github.com/aq1018/mongoid-history/blob/master/spec/integration/integration_spec.rb).
 
 Contributing to mongoid-history
 -------------------------------
 
-* Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
-* Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it
-* Fork the project
-* Start a feature/bugfix branch
-* Commit and push until you are happy with your contribution
-* Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
-* Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
+* Check out the latest code to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
+* Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it.
+* Fork the project.
+* Create a feature/bugfix branch.
+* Commit and push until you are happy with your changes.
+* Make sure to add tests.
+* Update the CHANGELOG for the next release.
+* Try not to mess with the Rakefile or version.
+* Make a pull request.
 
 Copyright
 ---------
 
-Copyright (c) 2011 Aaron Qian. See LICENSE.txt for
-further details.
+Copyright (c) 2011-2012 Aaron Qian. MIT License.
 
+See [LICENSE.txt](https://github.com/aq1018/mongoid-history/blob/master/LICENSE.txt) for further details.

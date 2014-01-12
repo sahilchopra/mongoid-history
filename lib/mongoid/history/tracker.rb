@@ -7,7 +7,7 @@ module Mongoid::History
       include Mongoid::Timestamps
       attr_writer :trackable
 
-      field :association_chain, :type => Mongoid::History::Association::Field
+      field :association_chain, :type => Mongoid::History::Association::Chain
       field :modified,          :type => Hash
       field :original,          :type => Hash
       field :version,           :type => Integer
