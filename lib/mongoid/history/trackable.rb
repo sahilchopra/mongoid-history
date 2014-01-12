@@ -8,7 +8,7 @@ module Mongoid::History::Trackable
       meta = Mongoid::History.meta(self)
 
       field meta.version_field, type: Integer, default: 0
-      referenced_in meta.modifier_field, class_name: meta.modifier_class_name
+      belongs_to meta.modifier_field, class_name: meta.modifier_class_name
 
       include MyInstanceMethods
 

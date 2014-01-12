@@ -11,7 +11,7 @@ describe Mongoid::History::Tracker do
       embeds_many :embones
 
       track_history   on: :all,       # track title and body fields only, default is :all
-                      modifier_field: :modifier, # adds "referenced_in :modifier" to track who made the change, default is :modifier
+                      modifier_field: :modifier, # adds "belongs_to :modifier" to track who made the change, default is :modifier
                       version_field: :version,   # adds "field :version, :type => Integer" to track current version, default is :version
                       track_create: false,    # track document creation, default is false
                       track_update: true,     # track document updates, default is true
@@ -27,7 +27,7 @@ describe Mongoid::History::Tracker do
       embedded_in :model
 
       track_history   on: :all,       # track title and body fields only, default is :all
-                      modifier_field: :modifier, # adds "referenced_in :modifier" to track who made the change, default is :modifier
+                      modifier_field: :modifier, # adds "belongs_to :modifier" to track who made the change, default is :modifier
                       version_field: :version,   # adds "field :version, :type => Integer" to track current version, default is :version
                       track_create: false,    # track document creation, default is false
                       track_update: true,     # track document updates, default is true
@@ -43,7 +43,7 @@ describe Mongoid::History::Tracker do
       embedded_in :embone
 
       track_history   on: :all,       # track title and body fields only, default is :all
-                      modifier_field: :modifier, # adds "referenced_in :modifier" to track who made the change, default is :modifier
+                      modifier_field: :modifier, # adds "belongs_to :modifier" to track who made the change, default is :modifier
                       version_field: :version,   # adds "field :version, :type => Integer" to track current version, default is :version
                       track_create: false,    # track document creation, default is false
                       track_update: true,     # track document updates, default is true

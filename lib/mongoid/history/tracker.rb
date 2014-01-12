@@ -14,7 +14,7 @@ module Mongoid::History
       field :action,            type: String
       field :scope,             type: String
 
-      referenced_in :modifier, class_name: Mongoid::History.modifier_class_name
+      belongs_to :modifier, class_name: Mongoid::History.modifier_class_name
 
       Mongoid::History.tracker_class = self
       Sweeper.hook!

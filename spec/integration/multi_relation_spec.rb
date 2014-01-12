@@ -11,7 +11,7 @@ describe Mongoid::History::Tracker do
       has_and_belongs_to_many :external_users, class_name: "User", inverse_of: :external_models
 
       track_history on: [:name, :user, :external_user_ids], # track title and body fields only, default is :all
-                    modifier_field: :modifier, # adds "referenced_in :modifier" to track who made the change, default is :modifier
+                    modifier_field: :modifier, # adds "belongs_to :modifier" to track who made the change, default is :modifier
                     modifier_field_inverse_of: nil, # no inverse modifier relationship
                     version_field: :version,   # adds "field :version, :type => Integer" to track current version, default is :version
                     track_create: false,    # track document creation, default is false
