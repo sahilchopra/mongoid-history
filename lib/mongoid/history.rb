@@ -7,19 +7,22 @@ module Mongoid
     mattr_accessor :modifier_class_name
     mattr_accessor :current_user_method
 
-    def self.tracker_class
-      @tracker_class ||= tracker_class_name.to_s.classify.constantize
-    end
+    class << self
 
-    def self.disable(&block)
-      Thread.current[GLOBAL_TRACK_HISTORY_FLAG] = false
-      yield
-    ensure
-      Thread.current[GLOBAL_TRACK_HISTORY_FLAG] = true
-    end
+      def set_tracker_class_name(value)
+        @@tracker_class_name ||= value
+      end
 
-    def self.enabled?
-      Thread.current[GLOBAL_TRACK_HISTORY_FLAG] != false
+      def disable(&block)
+        Thread.current[GLOBAL_TRACK_HISTORY_FLAG] = false
+        yield
+      ensure
+        Thread.current[GLOBAL_TRACK_HISTORY_FLAG] = true
+      end
+
+      def enabled?
+        Thread.current[GLOBAL_TRACK_HISTORY_FLAG] != false
+      end
     end
   end
 end
