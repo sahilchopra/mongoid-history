@@ -5,6 +5,8 @@ Next Release
 ------------
 
 * Your contribution here.
+* Add ability to customize tracker class for each trackable; multiple trackers across the app are now possible - [@johnnyshields](https://github.com/johnnyshields).
+* Add automatic support for `RequestStore` gem as drop-in replacement for `Thread.current` - [@johnnyshields](https://github.com/johnnyshields).
 
 0.4.1 (1/11/2014)
 -----------------
